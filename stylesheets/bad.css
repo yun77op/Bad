@@ -1,0 +1,51 @@
+/**
+ * Layout
+ */
+
+/*Fixed layouts (centered, fixed-width layouts)*/
+body.layout-fixed #content {
+  margin: 25px auto;
+  width: 690px;
+}
+
+/*Fluid layouts (left aligned, with sidebar, min- & max-width content)*/
+body.layout-fluid #content {
+  margin: 25px auto;
+  width: 690px;
+}
+
+
+/**
+ * Bad window
+ */
+
+.window-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, .5);
+}
+
+.window-wrapper {
+  position: absolute;
+  top: 100px;
+}
+
+.window {
+  background: #FFF;
+  border: 4px solid rgba(0, 0, 0, .6);
+  padding: 10px;
+}
+
+.window-control-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 12px;
+  height: 12px;
+  background: url(../images/close.gif) no-repeat;
+  border: none;
+  cursor: pointer;
+}
