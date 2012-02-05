@@ -23,6 +23,7 @@
 
   Bad.registerPage = function(page) {
     registeredPages[page.name] = page;
+    page.initialize = page.initialize || function(){};
     page.initialize();
   };
 
@@ -42,7 +43,7 @@
     return null;
   };
 
-  Bad.showPageByName = function(name, updateHistory) {
+  Bad.showPageByName = function(name, updateHistory, replaceState) {
     var targetPage = registeredPages[name];
     var activePage = this.activePage_;
 
@@ -101,7 +102,7 @@
       targetPage.emit('willShowPage', targetPage);
       targetPage.show(function() {
         if (updateHistory)
-          Bad.updateHistoryState_();
+          Bad.updateHistoryState_(replaceState);
         document.title = targetPage.title;
       });
     });
@@ -110,7 +111,7 @@
   /**
    * @friend
    */
-  Bad.updateHistoryState_  = function() {
+  Bad.updateHistoryState_  = function(replaceState) {
     var page = this.activePage_;
     var path = location.pathname;
     if (path)
@@ -118,8 +119,8 @@
 
     // If there is no path, the current location is /.
     // Override this with the new page.
-    var historyFunction = path ? window.history.pushState :
-                                 window.history.replaceState;
+    var historyFunction = (!path || replaceState) ? window.history.replaceState :
+                                 window.history.pushState;
     historyFunction.call(window.history,
                          {pageName: page.name},
                          page.title,
@@ -132,11 +133,13 @@
     }
   };
 
-  Bad.defaultRoute = function() {
+  Bad.defaultRoute = function(fallbackPage) {
     var path = location.pathname;
     var page = this.getPageByPath(path);
     if (page) {
       Bad.showPageByName(page.name, true);
+    } else {
+      Bad.showPageByName(fallbackPage.name, true, true);
     }
   };
 
@@ -252,8 +255,8 @@
 
   Window.hide = function(updateHistory) {
     if (updateHistory) {
-      Bad.activePage_ = Bad.getPageByPath(Bad.reservedInlinePagePath_);
-      Bad.updateHistoryState_();
+      var targetPage = Bad.getPageByPath(Bad.reservedInlinePagePath_);
+      Bad.showPageByName(targetPage.name, true);
     }
     Window.overlay.hidden = true;
   };
@@ -305,7 +308,7 @@
     showRootPage_: function(callback) {
       var self = this;
       this.setTitle_(this.title);
-      this.getPageContent(function(pageContent) {
+      this.getPageContent(function(err, pageContent) {
         self.setContent_(pageContent);
         self.position_();
         self.setupBehaviours_();
@@ -320,7 +323,7 @@
 
     showSubPage_: function(callback) {
       var self = this;
-      this.getPageContent(function(pageContent) {
+      this.getPageContent(function(err, pageContent) {
         var container = document.querySelector(self.pageContainerSelector);
         container.innerHTML = pageContent;
 
@@ -388,8 +391,9 @@
       var self = this;
 
       Window.hide();
-      this.getPageContent(function(pageContent) {
+      this.getPageContent(function(err, pageContent) {
         self.setupLayout();
+        self.setupPage();
         Bad.container.innerHTML = pageContent;
 
         self.emitDidShowPage();
@@ -398,12 +402,20 @@
     },
 
     setupLayout: function() {
+      this.setBodyClassName('layout', this.layout);
+    },
+
+    setupPage: function() {
+      this.setBodyClassName('page', this.name);
+    },
+
+    setBodyClassName: function(prefix, name) {
       var body = document.body;
-      var prefix = 'layout-';
+      prefix += '-';
       var prevCls = body.className.match(new RegExp(prefix + '\\w+'));
       if (prevCls)
         body.classList.remove(prevCls[0]);
-      body.classList.add(prefix + this.layout);
+      body.classList.add(prefix + name);
     }
   };
 

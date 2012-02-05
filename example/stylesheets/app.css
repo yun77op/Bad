@@ -1,0 +1,29 @@
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
+
+.ui-tab-nav li.ui-state-active {
+  color: yellow;
+}
+
+#header .site-title {
+  float: left;
+  margin: 0;
+}
+
+
+#top-nav ul {
+  list-style: none;
+  float: left;
+}
+
+#top-nav li {
+  float: left;
+  margin-right: .4em;  
+}
+
+#search {
+  width: 400px;
+  float: right;
+  margin-top: .8em;
+}

@@ -4,31 +4,25 @@
   <meta charset="utf-8">
   <title>Bad</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <link href="stylesheets/bad.css" rel="stylesheet" type="text/css" />
+  <link href="stylesheets/bad.css" rel="stylesheet" media="screen, projection" type="text/css" />
+  <link href="stylesheets/app.css" rel="stylesheet" media="screen, projection" type="text/css" />
   <link rel="shortcut icon" href="/favicon.ico">
-  <style>
-    .ui-tab-nav li.ui-state-active {
-      color: yellow;
-    }
-
-  </style>
 </head>
 <body>
-  <div id="header">
-    <h1><a href="/">Bad</a></h1>
-    <nav>
+  <div id="header" class="clearfix">
+    <h1 class="site-title"><a href="/">Bad</a></h1>
+    <nav id="top-nav">
       <ul>
         <li><a href="/about" class="about" data-page="about">About</a></li>
-        <li><a href="/tos" class="tos" data-page="tos">Term of use</a></li>
+        <li><a href="/ninja" class="ninja" data-page="ninja">Ninja</a></li>
         <li><a href="/help" class="help" data-page="help">Help</a></li>
       </ul>
     </nav>
+    <div id="search">
+      <input type="text">
+    </div>
   </div>
-
   <div id="content"></div>
-  <div id="footer">
-    <div class="copyright center"></div>
-  </div>
   <script src="https://raw.github.com/yun77op/Bad/master/lib/zepto.js"></script>
   <script src="https://raw.github.com/yun77op/Bad/master/lib/async.js"></script>
   <script src="https://raw.github.com/yun77op/Bad/master/lib/eventproxy.js"></script>
