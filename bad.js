@@ -15,8 +15,24 @@
   var registeredPages = {};
   var convertedPageName;
 
+  var settings = {
+    templatePath: '/templates',
+    templateMode: 'normal',
+    templateExt: 'tmpl',
 
-  Bad.container = null;
+    container: null
+  };
+
+  Bad.set = function(setting, val) {
+    if (val === undefined) {
+      if (settings.hasOwnProperty(setting)) {
+        return settings[setting];
+      }
+    } else {
+      settings[setting] = val;
+      return this;
+    }
+  };
 
   Bad.activePage_ = null;
   Bad.reservedInlinePagePath_;
@@ -394,7 +410,9 @@
       this.getPageContent(function(err, pageContent) {
         self.setupLayout();
         self.setupPage();
-        Bad.container.innerHTML = pageContent;
+
+        var container = Bad.set('container');
+        container.innerHTML = pageContent;
 
         self.emitDidShowPage();
         callback && callback();
@@ -454,50 +472,44 @@
 
 /**
  * Templates
- * V5 @see https://github.com/V5Framework/
+ * Modified from V5 @see https://github.com/V5Framework/
  */
 (function (global) {
   var Bad = global.Bad;
-  Bad._templates = {};
-
-  /**
-   * @description templateMode, optimized or normal.
-   */
-  Bad.templateMode = "normal";
+  var templates = {};
 
   var getTemplateNormally = function (name, callback) {
-    var template = Bad._templates[name];
-    if (template) {
-      callback(template);
-    } else {
-      $.get("templates/" + name + ".tmpl?_=" + new Date().getTime(), function (templ) {
-        Bad._templates[name] = templ;
-        callback(templ);
-      });
-    }
+    var url = Bad.set('templatePath') + '/' + name + '.' +
+        Bad.set('templateExt') + '?_=' + new Date().getTime();
+    $.get(url, function (tmpl) {
+      templates[name] = tmpl;
+      callback(tmpl);
+    });
   };
 
   var getTemplateOptimized = function (name, callback) {
-    var template = Bad._templates[name];
-    if (template) {
-      callback(template);
-    } else {
-      $.get("templates/optimized_combo.tmpl?_=" + new Date().getTime(), function (templ) {
-        $(templ).find("script").each(function (index, script) {
-          var templateNode = $(script);
-          var id = templateNode.attr("id");
-          Bad._templates[id] = templateNode.html();
-        });
-        callback(Bad._templates[name]);
+    //TODO Make optimized_combo configurable
+    var url = Bad.set('templatePath') + '/optimized_combo.' +
+        Bad.set('templateExt') + '?_=' + new Date().getTime();
+    $.get(url, function (tmpl) {
+      $(tmpl).find("script").each(function (index, script) {
+        var templateNode = $(script);
+        var id = templateNode.attr("id");
+        templates[id] = templateNode.html();
       });
-    }
+      callback(templates[name]);
+    });
   };
 
   /**
    * @description Fetch the template file.
    */
   Bad.getTemplate = function (name, callback) {
-    if (Bad.templateMode === "normal") {
+    var template = templates[name];
+    if (template) {
+      return callback(template);
+    }
+    if (Bad.set('templateMode') === "normal") {
       getTemplateNormally(name, callback);
     } else {
       getTemplateOptimized(name, callback);
