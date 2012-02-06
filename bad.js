@@ -20,7 +20,12 @@
     templateMode: 'normal',
     templateExt: 'tmpl',
 
-    container: null
+    container: null,
+    hideOnOverlayClick: true,
+    hideOnContentClick: false,
+    width: 600,
+
+    layout: 'fixed'
   };
 
   Bad.set = function(setting, val) {
@@ -67,7 +72,6 @@
     // twice). Do nothing.
     if (activePage && activePage.name == targetPage.name)
       return;
-
     
     //Show hierarchy
 
@@ -240,16 +244,18 @@
 
 
   function Window(data) {
-    extend(this, Window.DEFAULTS);
+    var self = this;
+    Window.DEFAULT_PROPS.forEach(function(prop) {
+      self[prop] = Bad.set(prop);
+    });
     Page.call(this, data);
   }
 
-  Window.DEFAULTS = {
-    hideOnOverlayClick: true,
-    hideOnContentClick: false,
-
-    width: 600
-  };
+  Window.DEFAULT_PROPS = [
+    'hideOnOverlayClick', 
+    'hideOnContentClick',
+    'width'
+  ];
 
   Window.WRAPPER = '<div class="window-wrapper"><div class="window"><div class="window-header"><h1 class="window-title"></h1><div class="window-control"><button class="window-control-close"></button></div></div><div class="window-content">Hello world</div></div></div>';
 
@@ -390,13 +396,14 @@
 
 
   function InlinePage(data) {
-    extend(this, InlinePage.DEFAULTS);
+    var self = this;
+    InlinePage.DEFAULT_PROPS.forEach(function(prop) {
+      self[prop] = Bad.set(prop);
+    });
     Page.call(this, data);
   }
 
-  InlinePage.DEFAULTS = {
-    layout: 'fixed'
-  };
+  InlinePage.DEFAULT_PROPS = ['layout'];
 
   InlinePage.prototype = {
     constructor: InlinePage,
