@@ -1,0 +1,4 @@
+name: baddemo
+version: 1
+handle:
+- rewrite: if(!is_file() && !is_dir()) goto "/index.html"
